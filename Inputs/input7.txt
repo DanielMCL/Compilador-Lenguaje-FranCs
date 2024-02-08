@@ -1,0 +1,21 @@
+$ Hace el maximo de dos numeros. hecho para probar this, metodos de clase y constructores
+classe pareja:
+    entier n1;
+    entier n2;
+  	entier vector[10];
+
+    pareja{entier n1, entier n2}:
+   	 deuis.n1 = n1;
+   	 deuis.n2 = n2#
+   	 
+    entier max{}:
+    	entier a;
+   	 oui(n1>=n2):a = n1#
+   	 non:a = n2#
+   	 retour a#
+#
+nule principale {}:
+  pareja aux;
+  aux.pareja{1,2};
+  printe{aux.max{}}
+#

@@ -1,0 +1,16 @@
+entier g = 10;
+
+entier fun2{}:
+	entier a = g;
+	retour a#
+	
+entier fun1{entier n}:
+	n = n + 2;
+	entier m = fun2{};
+	retour m + n#
+
+nule principale{}:
+	entier a = 3;
+	printe{fun1{a}}#
+	
+$Output 15

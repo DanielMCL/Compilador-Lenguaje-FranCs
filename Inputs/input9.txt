@@ -1,0 +1,27 @@
+$Probar variables globales
+
+entier b = 2;
+structe maximos:
+	entier inicio =-1;
+	entier v[10]
+#
+maximos a;
+
+nule maximiza{entier N}:
+    foug(entier i = 0; i < N; i = i + 1):
+    	oui((a.inicio == -1) ou (a.v[i] > a.inicio)):
+    		a.inicio = a.v[i]
+   		#
+   	#
+#
+
+nule principale {}:
+  entier N = 10;
+  a.inicio = 3;
+  printe{a.inicio};
+  foug(entier i = 0; i < N; i = i + 1):
+  	a.v[i]= i
+  #
+  maximiza{10};
+  printe{a.inicio}
+#

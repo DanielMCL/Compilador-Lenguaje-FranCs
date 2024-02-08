@@ -1,0 +1,22 @@
+$Prueba de expresiones, ver que las posiciones no se modifican cuando no toca y llamada a funcion.
+$Output 0 0 6 1 18 
+nule maximiza{entier N, entier& v[10]}:
+	
+#
+
+nule principale {}:
+  entier v[10];
+  maximiza{5, v};
+  v[5] = 0;
+  entier a = v[5];
+  printe{a};
+  v[5] = 5 + 1;
+  printe{a};
+  printe{v[5]};
+  boleen b = faux;
+  b = vrai ou faux;
+  printe{b};
+  
+  entier div = 100/10;
+  printe{div}
+#

@@ -1,0 +1,22 @@
+$Se ve que funciona llamar a funciones y procedimientos
+	
+entier fun{entier n}:
+	n = n + 1;
+	retour n#
+	
+nule proc{entier& n}:
+	n = n + 1#
+
+nule principale{}:
+	entier n = 5;
+	
+	printe{n};
+	n = fun{n};
+	printe{n};
+	fun{n};	$Se puede no usar el valor
+	printe{n};
+	proc{n};
+	printe{n}
+	#
+	
+$Output 5 6 6 7

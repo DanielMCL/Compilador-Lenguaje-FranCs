@@ -1,0 +1,13 @@
+$ Prueba para tipos definidos
+$ Output 4,7,7
+tdef entier tipo;
+tipo numero{tipo& a}:
+	a = a + 3;
+	retour a#
+
+nule principale{}:
+	tipo hola = 4;
+	printe{hola};
+	printe{numero{hola}};
+	printe{hola}
+#

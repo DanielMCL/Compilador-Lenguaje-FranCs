@@ -1,0 +1,6 @@
+$ Debería dar error de binding porque falta principale 
+tdef entier vector[100];
+structe prueba:
+	vector nums;
+	entier size = 100;
+	entier id#

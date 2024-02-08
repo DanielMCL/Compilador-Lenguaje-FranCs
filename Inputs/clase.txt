@@ -1,0 +1,16 @@
+$Prueba de clases
+classe tClass:
+	entier a;
+	entier b;
+	tClass{}:
+		a = 2;
+		b = 3#
+#
+
+nule principale{}:
+	tClass c;
+	c.a = 4;
+	
+	printe{c.a}
+	
+#

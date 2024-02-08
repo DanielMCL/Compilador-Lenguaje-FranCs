@@ -1,0 +1,11 @@
+Construir claselexica y constructorastexp
+java -cp ../cup.jar java_cup.Main -parser ConstructorASTExp -symbols ClaseLexica -nopositions ConstructorAST.cup
+
+compilar las clases de java
+javac -cp "cup.jar:." */*.java
+
+
+Pruebas
+java -cp "cup.jar:." constructorast.Main  Inputs/nombre de input
+./wat2wasm main.wat
+node main.js

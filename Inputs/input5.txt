@@ -1,0 +1,12 @@
+$Prueba de punteros, comprobar que se accede correctamente
+
+nule principale {}:
+  entier v = 5;
+  entier u = 5;
+  printe{u + v};
+  entier *punt = &v;
+  v = *punt;
+  entier *punt1 = &u;
+  u = *punt;
+  printe{u + v}
+#

@@ -1,0 +1,12 @@
+structe class:
+    entier n1;
+    entier n2
+#
+
+nule principale {}:
+  class d;
+  d.n2 = 17;
+  d.n1 = 13;
+  printe{d.n2};
+  printe{d.n1}
+#

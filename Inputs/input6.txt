@@ -1,0 +1,24 @@
+$Aquí realizamos una funcion aritmetica sobre un vector y lo devolvemos como un puntero. a imprime el valor de ese puntero
+$Output 0 1 4 4 4 5 12 12 12 12 12 2
+entier* maximiza{entier N, entier v[10]}:
+	 entier aux = 0;
+	 foug(entier i = 0; i < N; i = i + 1):
+	 	oui(v[i]>aux):
+	 		aux = v[i]*(i%4)
+	 	#
+	 	printe{aux}
+	 #
+	 retour &aux
+#
+
+nule principale {}:
+  entier v[10];
+  entier N = 10;
+  foug(entier i = 0; i < N; i = i + 1):
+	 	v[i]= i
+	 #
+  entier a = *maximiza{10, v};
+  printe{a};
+  entier div = 100/10/5;
+  printe{div}
+#

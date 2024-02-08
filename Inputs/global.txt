@@ -1,0 +1,30 @@
+$Prueba de variables globales
+boleen g1 = vrai;
+boleen g2 = faux;
+entier g3 = 7;
+entier v[10];
+
+
+nule fun{}:
+  printe{g3};
+	g3 = g3 + 5
+#
+
+nule fun2{}:
+  foug(entier i = 0; i < 10  ; i = i + 1):
+  	printe{v[i]}#
+#
+
+nule principale {}:
+  printe{g1};
+  printe{g2};
+  printe{g3};
+  fun{};
+  printe{g3};
+  
+  foug(entier i = 9; i >= 0; i = i - 1):
+  	v[i] = 10 - i#
+  	
+  fun2{}
+  
+#

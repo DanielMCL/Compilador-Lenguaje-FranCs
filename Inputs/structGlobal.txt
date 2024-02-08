@@ -1,0 +1,22 @@
+entier b = 2;
+structe maximos:
+	entier inicio;
+	entier v[10]
+#
+maximos a;
+
+nule fun{}:
+	foug(entier i = 20; i< 22; i = i+1):
+	printe{a.inicio}#
+	printe{a.inicio}
+#
+
+nule principale{}:
+	entier n = 4;
+	a.inicio = 3;
+	printe{a.inicio};
+	
+	fun{}
+
+#
+$Prueba de un struct global

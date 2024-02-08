@@ -1,0 +1,8 @@
+nule principale{}:
+	entier n;
+	boleen b;
+	leeg{n};
+	leeg{b};
+	oui(b): printe{n}#
+	non: printe{-n}#
+#

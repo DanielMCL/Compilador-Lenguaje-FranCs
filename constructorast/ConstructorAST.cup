@@ -1,0 +1,219 @@
+package constructorast;
+
+import java_cup.runtime.*;
+import alex.AnalizadorLexicoExp;
+import alex.UnidadLexica;
+import alex.TokenValue;
+import errors.GestionErroresTiny;
+import java.util.ArrayList;
+import ast.*;
+
+scan with {: return getScanner().next_token(); :};
+//action code {:
+//   ... add some code to declare and initialize e.g. Var2s used by the code embedded in the grammar
+//:};
+parser code {: 
+   private GestionErroresTiny errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresTiny();
+   AnalizadorLexicoExp alex = (AnalizadorLexicoExp)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+
+
+terminal  TokenValue  IDEN, AST, REF, ALM, THIS,
+	         MAS, MENOS, DIV, MOD, MAYOR, MENOR, MAYORIG, DIST, MENORIG, IGUAL, ASIG, ET, OU,
+            IF, ELSE, FOUG, RETOUR, WHILE,
+            STRUCT, CLASS,TDEF, TINT, NUM, TBOOL, BOOL, NULE,
+            APAREN, CPAREN, ALLAVE, CLLAVE, ACORCH, CCORCH,
+            COMA, DPUNTOS, PUNTO, PUNTOCOMA,
+            READ, WRITE;
+non terminal Programa PR;
+non terminal E Exp, Exp1, Exp2,Exp3, Exp4, Exp5, Exp6, Llamada;
+non terminal ArrayList<Dec> BloqueClase;
+non terminal DecType DecType, DecStruct, DecClass, DecTypedef;
+non terminal ArrayList<DecVar> DecVar, DecVar1;
+non terminal ArrayList<DecParam> DecParam, DecParam1;
+non terminal DecParam DecParam2;
+non terminal Dec DecFun, BloqueClase1, DecConstr, Decl;
+non terminal ArrayList<I> Instrucciones, Resto;
+non terminal DecVar DecVar2;
+non terminal Tipo Tipo;
+non terminal TArray Corch;
+non terminal ArrayList<E> Param;
+non terminal Asig Asignacion;
+non terminal I Return, Leer, Escribir, InsSimple, For, While, InsNoSimple, If, IfElse;
+non terminal V Var, Var1, Funcion, Fun1;
+non terminal KindE  Op0, Op1, Op2, Op3;
+
+//Programa
+PR ::= PR:pr Decl:d {: pr.add(d); RESULT = pr; :} | {: RESULT = new Programa(new ArrayList<Dec>()); :};
+Decl ::= DecFun:d {: RESULT = d; :} | DecType:d {: RESULT = d; :} | DecVar2:d PUNTOCOMA {: RESULT = d; :};
+
+//Funciones y bloques
+
+DecType ::= DecStruct:d {: RESULT = d; :} | DecClass:d {: RESULT = d; :}  | DecTypedef:d {: RESULT = d; :} PUNTOCOMA;
+DecStruct ::= STRUCT IDEN:i DPUNTOS DecVar:v ALM {: RESULT = new DecStruct(new Iden(i.lexema), v); :}
+               | STRUCT:c IDEN error DecVar ALM {: System.out.println(" Missing character ':' " + c.fila);:}
+               | STRUCT IDEN DPUNTOS DecVar error {: System.out.println(" Missing character '#' ");:};
+DecClass ::= CLASS IDEN:i DPUNTOS BloqueClase:b ALM {: RESULT = new DecClass(new Iden(i.lexema), b); :};
+//               | CLASS:c IDEN error BloqueClase ALM {: System.out.println(" Missing character ':' " + c.fila);:};
+//               | CLASS IDEN DPUNTOS BloqueClase error {: System.out.println(" Missing character '#' ");:};
+DecTypedef ::= TDEF Tipo:t IDEN:i {: RESULT = new DecTypedef(t, new Iden(i.lexema)); :}
+                | TDEF Tipo:t IDEN:i Corch:c {: c.addType(t); RESULT = new DecTypedef(c, new Iden(i.lexema)); :};
+
+DecConstr ::= IDEN:i ALLAVE DecParam:p CLLAVE DPUNTOS Instrucciones:ins ALM {: RESULT = new DecConstr(new Iden(i.lexema), p, ins); :} ;
+   //            | IDEN ALLAVE:c error CLLAVE DPUNTOS Instrucciones ALM {: System.out.println(" Incorrect funcion parameters line " + c.fila);:};
+  //             | IDEN ALLAVE DecParam CLLAVE:c error Instrucciones ALM {: System.out.println(" Missing character ':' line " + c.fila);:};
+
+BloqueClase ::= BloqueClase:l BloqueClase1:b {: l.add(b); RESULT = l; :} 
+                | {: RESULT = new ArrayList<Dec>(); :} ;
+BloqueClase1 ::= DecConstr:d {: RESULT = d; :}  | DecFun:d {: RESULT = d; :} | DecVar2:d PUNTOCOMA {: RESULT = d; :} 
+                | DecStruct:d {: RESULT = d; :} | DecTypedef:d {: RESULT = d; :} PUNTOCOMA;
+
+//Var2s
+DecVar ::= DecVar1:l {: RESULT = l; :} | ;
+//        DecVar DecVar2 error {: System.out.println(" missing character ';'' ");:};
+DecVar1 ::= DecVar1:l PUNTOCOMA DecVar2:v {: l.add(v); RESULT = l; :} 
+                | DecVar2:v {: ArrayList<DecVar> l = new ArrayList<DecVar>(); l.add(v); RESULT = l; :};
+
+DecFun ::= Tipo:t IDEN:i ALLAVE DecParam:p CLLAVE DPUNTOS Instrucciones:ins ALM {: RESULT = new DecFun(t, new Iden(i.lexema), p, ins); :} 
+        | NULE IDEN:i ALLAVE DecParam:p CLLAVE DPUNTOS Instrucciones:ins ALM {: RESULT = new DecFun(new TNule(), new Iden(i.lexema), p, ins); :} 
+        //    | Tipo IDEN ALLAVE:c error CLLAVE DPUNTOS Instrucciones ALM {: System.out.println(" Incorrect funcion parameters line " + c.fila);:}
+          //  | NULE IDEN ALLAVE:c error CLLAVE DPUNTOS Instrucciones ALM {: System.out.println(" Incorrect funcion parameters line " + c.fila);:}
+            | Tipo IDEN ALLAVE DecParam CLLAVE:c error Instrucciones ALM {: System.out.println(" Missing character ':' line " + c.fila);:}
+            | NULE IDEN ALLAVE DecParam CLLAVE:c error Instrucciones ALM {: System.out.println(" Missing character ':' line " + c.fila);:}
+            | Tipo IDEN:c ALLAVE DecParam CLLAVE DPUNTOS Instrucciones error {: System.out.println(" Missing character '#' ");:}
+            | NULE IDEN:c ALLAVE DecParam CLLAVE DPUNTOS Instrucciones error {: System.out.println(" Missing character '#' ");:}
+            | Tipo IDEN:c error Instrucciones ALM {: System.out.println(" Error in function declared line " + c.fila);:}
+            | NULE IDEN:c error Instrucciones ALM {: System.out.println(" Error in function declared line " + c.fila);:};
+
+
+//Instrucciones
+Instrucciones ::= Resto:r {: RESULT = r; :} |  {: RESULT = new ArrayList<I>(); :};
+
+Resto ::= InsSimple:i PUNTOCOMA Resto:r {: ArrayList<I> l = new ArrayList<I>(); l.add(i); r.forEach((e)->{l.add(e);}); RESULT = l; :} 
+        | InsNoSimple:i Instrucciones:r {: ArrayList<I> l = new ArrayList<I>(); l.add(i); r.forEach((e)->{l.add(e);}); RESULT = l; :}  
+        | InsSimple:i {: ArrayList<I> l = new ArrayList<I>(); l.add(i); RESULT = l; :};
+       // | InsError
+   //     | InsSimple error {: System.out.println(" Missing character ';' ");:}  Instrucciones;
+
+
+InsNoSimple ::= For:i {: RESULT = i; :}
+                | While:i {: RESULT = i; :}
+                | If:i {: RESULT = i; :}
+                | IfElse:i {: RESULT = i; :}; //No llevan punto y coma detras
+
+If ::= IF APAREN Exp:e CPAREN DPUNTOS Instrucciones:l ALM {: RESULT = new If(e, l); :};
+
+IfElse ::= IF APAREN Exp:e CPAREN DPUNTOS Instrucciones:l1 ALM ELSE DPUNTOS Instrucciones:l2 ALM {: RESULT = new IfElse(e, l1, l2); :};
+
+For ::= FOUG APAREN DecVar2:v PUNTOCOMA Exp:e PUNTOCOMA Asignacion:a CPAREN DPUNTOS Instrucciones:ins ALM {: RESULT = new For(v, e, a, ins); :}
+         | FOUG:c error Instrucciones ALM{: System.out.println(" Incorrect foug declaration line " + c.fila);:}
+         | FOUG APAREN DecVar2 CPAREN:c error Instrucciones ALM {: System.out.println(" Missing character ':' line " + c.fila);:};
+        // | FOUG APAREN:c error CPAREN DPUNTOS Instrucciones ALM {: System.out.println(" Incorrect foug header line " + c.fila);:}
+While ::= WHILE APAREN Exp:e CPAREN DPUNTOS Instrucciones:i ALM {: RESULT = new While(e, i); :}
+                | WHILE:c error Instrucciones ALM {: System.out.println(" Incorrect whilee declaration line " + c.fila);:}
+                | WHILE APAREN:c error DPUNTOS Instrucciones ALM {: System.out.println(" Incorrect whilee condition " + c.fila);:};
+
+//InsError ::= IDEN error {: System.out.println(" Incorrect instruction ");:};
+
+InsSimple ::= DecVar2:i {: RESULT = i; :} 
+                | Asignacion:i {: RESULT = i; :} 
+                | Leer:i {: RESULT = i; :} 
+                | Escribir:i {: RESULT = i; :} 
+                | Llamada:i {: RESULT = i; :} 
+                | Return:i {: RESULT = i; :} ;
+//               | error {: System.out.println(" Incorrect instruction ");:};
+
+DecVar2 ::= Tipo:t IDEN:i ASIG Exp:e {: RESULT = new DecVar(t, new Iden(i.lexema), e); :}
+                | Tipo:t IDEN:i Corch:c ASIG Exp:e {: c.addType(t); RESULT = new DecVar(c, new Iden(i.lexema), e); :}
+                | Tipo:t IDEN:i {: RESULT = new DecVar(t, new Iden(i.lexema)); :}
+                | Tipo:t IDEN:i Corch:c {:  c.addType(t); RESULT = new DecVar(c, new Iden(i.lexema)); :};
+//          | Tipo IDEN ASIG:c error {: System.out.println(" Expresion missing line " + c.fila);:};
+
+Corch ::= ACORCH NUM:e1 CCORCH {: RESULT = new TArray(new Num(e1.lexema)); :}
+        | Corch:c ACORCH NUM:e1 CCORCH {: RESULT = new TArray(c, new Num(e1.lexema)); :};
+
+//Tipos
+Tipo ::= Tipo:t AST {: RESULT = new TPuntero(t); :}
+        | IDEN:i {: RESULT = new TBasico(i.lexema); :} 
+        | TINT {: RESULT = new TNum(); :}| TBOOL {: RESULT = new TBool(); :};
+
+Leer ::= READ ALLAVE Var:v CLLAVE{: RESULT = new Read(v); :}
+            | READ:c ALLAVE error CLLAVE {: System.out.println(" Error in leeg call line " + c.fila);:};
+//            | READ:c error {: System.out.println(" Error in leeg call line " + c.fila);:};
+Escribir ::= WRITE ALLAVE Exp:e CLLAVE {: RESULT = new Write(e); :}
+            | WRITE:c ALLAVE error CLLAVE {: System.out.println(" Error in printe call line " + c.fila);:};
+//            | WRITE:c error {: System.out.println(" Error in printe call line " + c.fila);:};
+Return ::= RETOUR Exp:e {: RESULT = new Return(e); :};
+
+Llamada ::= Funcion:f ALLAVE Param:p CLLAVE {: RESULT = new Call(f, p); :};
+
+Funcion ::= IDEN:aI {: RESULT = new Iden(aI.lexema); :}
+        | Fun1:st {: RESULT = st; :};
+
+Fun1 ::= Var1:iValue PUNTO IDEN:i {: RESULT = new Struct(iValue, new Iden(i.lexema)); :}
+        | Var1:iValue PUNTO Fun1:f {: RESULT = new Struct(iValue, f); :};
+
+Param ::= Exp:e {: ArrayList<E> l= new ArrayList<E>(); l.add(e);
+                        RESULT = l; :}
+        | Param:aP COMA Exp:aE {: aP.add(aE); RESULT = aP; :}
+        | {: RESULT =  new ArrayList<E>(); :};
+//        | error  {: System.out.println(" Error in parameters ");:};
+
+Asignacion ::= Var:aV ASIG Exp:aExp {:RESULT = new Asig(aV, aExp); :};
+             //  | Var2 ASIG:c error {: System.out.println(" Expresion missing line " + c.fila);:};
+
+//Expresions
+Exp ::= Exp1:aDeexp {: RESULT=aDeexp; :}
+        | Exp:aDeexp0 Op0:aOp0 Exp1:aDeexp1	{: RESULT= new EBin(aDeexp0,aDeexp1, aOp0); :};
+  //      | error Op0 Exp1 {: System.out.println(" Mismatched binary operation ");:};
+Exp1 ::= Exp2:aDeexp2 {: RESULT= aDeexp2; :}
+        | Exp1:aDeexp1 Op1:aOp1 Exp2:aDeexp2 {: RESULT= new EBin(aDeexp1,aDeexp2, aOp1); :}
+        | Exp1:aDeexp1 Op2:aOp2 Exp2:aDeexp2 {: RESULT= new EBin(aDeexp1,aDeexp2, aOp2); :};
+    //    | error Op2 Exp2 {: System.out.println(" Mismatched binary operation ");:};
+Exp2 ::= Exp3:aDeexp {: RESULT= aDeexp; :}
+        | Exp2:aDeexp2 Op3:aOp Exp3:aDeexp3 {: RESULT= new EBin(aDeexp2,aDeexp3, aOp); :}  ;
+      //  | error Op3 Exp3 {: System.out.println(" Mismatched binary operation ");:};
+Exp3 ::= Exp4:aDeexp {: RESULT= aDeexp; :}
+        | Op1:aOp Exp4:aExp {: RESULT= new EUni(aExp, aOp); :};
+Exp4 ::= Exp5:aDeexp {: RESULT= aDeexp; :}  
+        | AST Var:aExp {: RESULT= new EUni(aExp, KindE.AST); :}//Acceso a valor de puntero
+        | REF Var:aExp {: RESULT= new EUni(aExp, KindE.REF); :};//Acceso a direccion
+Exp5 ::= Exp6: aExp {: RESULT = aExp; :}
+        | APAREN Exp: aDeexp CPAREN {: RESULT = aDeexp; :}
+        | BOOL: bValue {: RESULT = new Bool(bValue.lexema); :}
+        | NUM: numValue {: RESULT = new Num(numValue.lexema); :};
+Exp6 ::= Var:aV {: RESULT = aV; :}
+         | Llamada:aL {: RESULT = aL; :};
+
+Var ::= Var1:v1 PUNTO Var:v2 {: RESULT = new Struct(v1, v2); :}
+                | THIS PUNTO Var:aI {: RESULT = new Struct(aI); :}
+                | Var1:aV {: RESULT = aV; :};
+Var1 ::= IDEN:i  {: RESULT = new Iden(i.lexema); :}
+        | Var1:iValue ACORCH Exp:aExp CCORCH {: RESULT = new Array(iValue, aExp); :};
+
+Op0 ::= IGUAL {: RESULT = KindE.IGUAL; :} | DIST {: RESULT = KindE.DIST; :}
+        | MAYOR {: RESULT = KindE.MAYOR; :} | MENOR {: RESULT = KindE.MENOR; :}
+        | MAYORIG {: RESULT = KindE.MAYORIG; :}| MENORIG {: RESULT = KindE.MENORIG; :};
+Op1 ::= MAS {: RESULT = KindE.MAS; :} | MENOS {: RESULT = KindE.MENOS; :};
+Op2 ::= OU {: RESULT = KindE.OU; :};
+Op3 ::= DIV {: RESULT = KindE.DIV; :} | MOD {: RESULT = KindE.MOD; :} 
+      | AST {: RESULT = KindE.AST; :} | ET {: RESULT = KindE.ET; :};
+
+
+DecParam ::= DecParam1:d {: RESULT = d; :}
+                | {: RESULT = new ArrayList<DecParam>(); :} 
+                | error  {: System.out.println(" Error in parameter declaration ");:};
+DecParam1 ::= DecParam2:p  {: ArrayList<DecParam> d = new ArrayList<DecParam>(); d.add(p); RESULT = d; :} 
+                | DecParam1:d COMA DecParam2:p {: d.add(p); RESULT = d; :} ; 
+DecParam2 ::=  Tipo:t IDEN:i {: RESULT = new DecParam(t, new Iden(i.lexema), false); :}
+                | Tipo:t IDEN:i Corch:c {:  c.addType(t); RESULT = new DecParam(c, new Iden(i.lexema), false); :}
+                | Tipo:t REF IDEN:i {: RESULT = new DecParam(t, new Iden(i.lexema), true); :}
+                | Tipo:t REF IDEN:i Corch:c {:  c.addType(t); RESULT = new DecParam(c, new Iden(i.lexema), true); :};

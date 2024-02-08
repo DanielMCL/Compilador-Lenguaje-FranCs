@@ -1,0 +1,44 @@
+$ Este codigo hace el sumatorio de i + 2*i (n1 y n2 de una clase pareja) de 0 a N
+$ Despues actualiza n1 a n2 y calcula el sumatorio de todos los n1 + n2
+$ Utiliza arrays por valor y por referencia
+
+classe pareja:
+    entier n1;
+    entier n2;
+    entier vector[10];
+    
+    pareja{entier n1, entier n2}:
+   	 deuis.n1 = n1;
+   	 deuis.n2 = n2#
+   	 
+    entier max{}:
+    	 entier a;
+   	 oui(n1>=n2):a = n1#
+   	 non:a= n2#
+   	 retour a#
+#
+
+entier sumaTotal{entier N, pareja v[10]}:
+    entier suma = 0;
+    foug(entier i = 0; i < N; i= i + 1):
+   		suma = suma + v[i].n1;
+   		suma = suma + v[i].n2#
+    retour suma#
+
+nule maximiza{entier N, pareja& v[10]}:
+    foug(entier i = 0; i < N; i = i + 1):
+   		v[i].n1 = v[i].max{};
+   		v[i].n2 = v[i].n1##
+
+nule principale {}:
+  entier N = 10;
+  pareja v[10];
+  v[0].vector[0] = 2;
+  foug(entier i = 0; i < N; i = i + 1):
+   	v[i].pareja{i, 2 * i}#
+  entier suma1 = sumaTotal{N, v};
+  maximiza{N, v};
+  entier suma2 = sumaTotal{N, v};
+  printe{suma1};
+  printe{suma2}
+#

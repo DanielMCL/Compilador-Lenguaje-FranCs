@@ -1,0 +1,22 @@
+classe class:
+    entier n1;
+    entier n2;
+
+  	entier resta{}:
+  		retour n2 - n1
+  	#
+  	
+  	
+  	class{}:
+  	 	n1 = 5;
+  		n2 = -14#
+#
+
+nule principale {}:
+  class d;
+  d.class{};
+  printe{d.n2};
+  printe{d.n1};
+  printe{d.resta{}}
+#
+$Prueba de métodos de clase, imprime -19

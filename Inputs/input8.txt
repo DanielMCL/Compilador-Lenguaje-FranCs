@@ -1,0 +1,37 @@
+$Para probar llamadas a funciones anidadas y comprobar que se vuelve a la original. Ambas funciones encuentran el maximo de dos vectores
+
+entier comprobar{entier aux, entier i}:
+	entier result;
+	oui((aux == -1) ou (i > aux)):
+    		result = i
+    	#
+    	non:
+    		result = aux
+   	#
+   	retour result
+#
+entier maximiza2{entier N, entier& v[10]}:
+    entier aux = -1;
+    foug(entier i = 0; i < N; i = i + 1):
+    	aux = comprobar{aux, v[i]}
+    	#
+   retour aux#
+
+
+entier maximiza{entier N, entier& v[10]}:
+    entier aux = -1;
+    foug(entier i = 0; i < N; i = i + 1):
+    	oui((aux == -1) ou (v[i] > aux)):
+    		aux = v[i]
+   		##
+   retour aux#
+
+nule principale {}:
+  entier v[10];
+  entier N = 10;
+  foug(entier i = 0; i < N; i = i + 1):
+    	v[i]= i
+  #
+  printe{maximiza{10, v}};
+  printe{maximiza2{10, v}}
+#
