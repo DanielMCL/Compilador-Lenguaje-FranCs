@@ -1,6 +1,8 @@
-Trabajo de Sergio Hernando Rivero y Daniel Carreño López.
+Done by Sergio Hernando Rivero y Daniel Carreño López.
 
-Puede probarse desde este directorio con los ficheros de la carpeta Inputs mediante los comandos
-java -cp "cup.jar:." constructorast.Main  Inputs/nombre de input (por ejemplo input.txt)
+Compiler for made-up programming language "FranCs". 
+To use make sure [input name] has a correct code in FranCs and type the following comands followed by two imput lines that may or may not be empty:
+java -cp "cup.jar:." constructorast.Main  Inputs/[input name] (for example Input/input.txt)
 ./wat2wasm main.wat
 node main.js
+
